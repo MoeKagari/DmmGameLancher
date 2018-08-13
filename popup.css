@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    user-select: none;
+    display: grid;
+    grid-template-columns: 450px;
+    grid-row-gap: 5px;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+}
+
+.game:hover {
+    background-color: #50505018;
+}
+
+.game .icon {
+    display: block;
+    margin: auto auto;
+}
+
+.game .name {
+    margin: 0 0 0 0;
+    font-size: 18;
+    color: #171717;
+    text-decoration: none;
+    font-weight: normal;
+}
