@@ -1,66 +1,70 @@
-var DmmGame;
+chrome.runtime.getBackgroundPage(backgroundPage => {
+    var body = $("body");
+    var gameGridRowItemArray = backgroundPage.dmmGameArray.map(makeGameGridRowItem);
+    body.css("grid-template-rows", "repeat(" + gameGridRowItemArray.length + ",1fr)");
+    gameGridRowItemArray.forEach(gameGridRowItem => body.append(gameGridRowItem));
+});
 
-function init() {
-    chrome.runtime.getBackgroundPage(backgroundPage => {
-        DmmGame = backgroundPage.DmmGame;
-
-        var body = $("body");
-        var gameGridRowItemArray = backgroundPage.dmmGameArray.map(makeGameGridRowItem);
-        body.css("grid-template-rows", "repeat(" + gameGridRowItemArray.length + ",1fr)");
-        gameGridRowItemArray.forEach(gameGridRowItem => body.append(gameGridRowItem));
-
-        chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-            console.log(request);
-            switch (request.type) {
-                case "window_set":
-                    console.log($(".operation.windowExistent"));
-                    $("." + request.game_name + " .operation.windowNotExistent").attr("disabled", true);
-                    $("." + request.game_name + " .operation.windowExistent").attr("disabled", false);
-                    break;
-                case "window_remove":
-                    $("." + request.game_name + " .operation.windowNotExistent").attr("disabled", false);
-                    $("." + request.game_name + " .operation.windowExistent").attr("disabled", true);
-                    break;
-            }
-        });
-    });
-}
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    console.log(request);
+    switch (request.type) {
+        case "window_set":
+            $("." + request.game.name + " .operation.windowNotExistent").attr("disabled", true);
+            $("." + request.game.name + " .operation.windowExistent").attr("disabled", false);
+            break;
+        case "window_remove":
+            $("." + request.game.name + " .operation.windowNotExistent").attr("disabled", false);
+            $("." + request.game.name + " .operation.windowExistent").attr("disabled", true);
+            break;
+    }
+});
 
 function makeGameGridRowItem(game) {
-    var gameGridRowItem = $("<div class='game'></div>");
-    gameGridRowItem.addClass(game.name);
-    gameGridRowItem.append(makeGameIconItem(game));
-    gameGridRowItem.append(
-        $("<div></div>")
-        .append("<h3 class='name'>" + game.name + "</h3>")
-        .append(makeGameBaseOperationButtonGroupItem(game))
-        .append(makeGameZoomOperationItem(game))
-    );
-    return gameGridRowItem;
+    return $("<div class='game'></div>")
+        .addClass(game.name)
+        .append(makeGameIconItem(game))
+        .append(
+            $("<div></div>")
+            .append("<h3 class='name'>" + game.name + "</h3>")
+            .append(makeGameBaseOperationButtonGroupItem(game))
+            .append(makeGameZoomOperationItem(game))
+        );
 }
 
 function makeGameIconItem(game) {
-    return "<img class='icon' src='" + DmmGame.getIcon(game) + "'></img>";
+    return "<img class='icon' src='" + DmmGameHandler.getIcon(game) + "'></img>";
 }
 
 function makeGameBaseOperationButtonGroupItem(game) {
-    var isWindowExistent = DmmGame.isWindowExistent(DmmGame.getWindow(game));
+    var isWindowExistent = DmmGameHandler.getWindow(game) ? true : false;
 
     var openGameWindowButton = $("<button class='operation windowNotExistent openGameWindow'>打开游戏</button>");
     openGameWindowButton.attr("disabled", isWindowExistent);
-    openGameWindowButton.click(ev => DmmGame.createGameWindow(game));
+    openGameWindowButton.click(ev => chrome.runtime.sendMessage({
+        "game": game,
+        "type": "window_create"
+    }));
 
     var focusWindowButton = $("<button class='operation windowExistent focusWindow'>设置焦点</button>");
     focusWindowButton.attr("disabled", !isWindowExistent);
-    focusWindowButton.click(ev => DmmGame.focusWindow(game));
+    focusWindowButton.click(ev => chrome.runtime.sendMessage({
+        "game": game,
+        "type": "window_focus"
+    }));
 
     var screenShotButton = $("<button class='operation windowExistent screenShot'>截图</button>");
     screenShotButton.attr("disabled", !isWindowExistent);
-    screenShotButton.click(ev => DmmGame.takeScreenShot(game));
+    screenShotButton.click(ev => chrome.runtime.sendMessage({
+        "game": game,
+        "type": "screenShot"
+    }));
 
     var toggleSoundButton = $("<button class='operation windowExistent toggleSound'>切换声音</button>");
     toggleSoundButton.attr("disabled", !isWindowExistent);
-    toggleSoundButton.click(ev => DmmGame.toggleSound(game));
+    toggleSoundButton.click(ev => chrome.runtime.sendMessage({
+        "game": game,
+        "type": "toggleSound"
+    }));
 
     return $("<div></div>")
         .css("display", "grid")
@@ -77,5 +81,3 @@ function makeGameZoomOperationItem(game) {
     // TODO: 缩放功能
     return div;
 }
-
-init();

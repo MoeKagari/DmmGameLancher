@@ -1,4 +1,4 @@
-var DmmGameBound = class {
+class DmmGameBound {
     constructor(width, height, top_delta, left_delta) {
         this.width = width;
         this.height = height;
@@ -7,7 +7,7 @@ var DmmGameBound = class {
     }
 }
 
-var DmmGame = class {
+class DmmGame {
     constructor(name, simpleName, url, url_x, bound, other = {}) {
         this.name = name;
         this.simpleName = simpleName;
@@ -15,11 +15,11 @@ var DmmGame = class {
         this.url_x = url_x;
         this.bound = bound;
         this.other = other;
-
         this.windowKey = "window_" + name;
-        DmmGame.removeWindow(this);
     }
+}
 
+class DmmGameHandler {
     static getIcon(game) {
         return game.other.icon || "empty.png";
     }
@@ -27,22 +27,19 @@ var DmmGame = class {
     static removeWindow(game) {
         localStorage.removeItem(game.windowKey);
         chrome.runtime.sendMessage({
-            "game_name": game.name,
+            "game": game,
             "type": "window_remove"
         });
     }
     static setWindow(game, window) {
         localStorage.setItem(game.windowKey, JSON.stringify(window));
         chrome.runtime.sendMessage({
-            "game_name": game.name,
+            "game": game,
             "type": "window_set"
         });
     }
     static getWindow(game) {
         return JSON.parse(localStorage.getItem(game.windowKey));
-    }
-    static isWindowExistent(window) {
-        return window ? true : false;
     }
 
     static createGameWindow(game, isR18 = false) {
@@ -55,7 +52,7 @@ var DmmGame = class {
             "width": game.bound.width,
             "height": game.bound.height
         }, newWindow => {
-            DmmGame.setWindow(game, {
+            DmmGameHandler.setWindow(game, {
                 "id": newWindow.id,
                 "tabId": newWindow.tabs[0].id
             });
@@ -69,14 +66,14 @@ var DmmGame = class {
     }
 
     static focusWindow(game) {
-        chrome.windows.update(DmmGame.getWindow(game).id, {
+        chrome.windows.update(DmmGameHandler.getWindow(game).id, {
             "focused": true
-        }, function() {
+        }, () => {
             console.log("focus window " + game.name);
         });
     }
 
-    static takeScreenShot(game) {
+    static screenShot(game) {
         var filename = "DmmGameLancher_ScreenShot/" + game.simpleName + "/" +
             (() => {
                 var d = new Date();
@@ -99,12 +96,12 @@ var DmmGame = class {
             ".png";
 
         //先 focus window
-        DmmGame.focusWindow(game);
+        DmmGameHandler.focusWindow(game);
 
         //延时一点时间 , capture ,然后 save
         setTimeout(() => {
             chrome.tabs.captureVisibleTab(
-                DmmGame.getWindow(game).id, {
+                DmmGameHandler.getWindow(game).id, {
                     "format": "png"
                 },
                 dataUrl => {
@@ -115,7 +112,7 @@ var DmmGame = class {
                     chrome.downloads.download({
                         "url": dataUrl,
                         "filename": filename
-                    }, function() {
+                    }, () => {
                         console.log("save capture to " + filename);
                     });
                 });
@@ -123,7 +120,7 @@ var DmmGame = class {
     }
 
     static toggleSound(game) {
-        chrome.tabs.get(DmmGame.getWindow(game).tabId, tabWithCurrentState => {
+        chrome.tabs.get(DmmGameHandler.getWindow(game).tabId, tabWithCurrentState => {
             var oldMuted = tabWithCurrentState.mutedInfo.muted;
             chrome.tabs.update(tabWithCurrentState.id, {
                 "muted": !oldMuted

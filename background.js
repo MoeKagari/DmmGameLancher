@@ -4,9 +4,27 @@ chrome.browserAction.setTitle({
     "title": manifest.name + "\n" + manifest.description
 });
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    console.log(request);
+    switch (request.type) {
+        case "window_create":
+            DmmGameHandler.createGameWindow(request.game);
+            break;
+        case "window_focus":
+            DmmGameHandler.focusWindow(request.game);
+            break;
+        case "screenShot":
+            DmmGameHandler.screenShot(request.game);
+            break;
+        case "toggleSound":
+            DmmGameHandler.toggleSound(request.game);
+            break;
+    }
+});
+
 chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
     for (game of dmmGameArray) {
-        var window = DmmGame.getWindow(game);
+        var window = DmmGameHandler.getWindow(game);
         if (window && window.tabId == details.tabId) {
             //rename window
             var code_rename = 'document.title = "' + game.name + '";';
@@ -31,9 +49,9 @@ chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
 //窗口被移除时
 chrome.windows.onRemoved.addListener(function(windowId) {
     for (game of dmmGameArray) {
-        var window = DmmGame.getWindow(game);
+        var window = DmmGameHandler.getWindow(game);
         if (window && window.id == windowId) {
-            DmmGame.removeWindow(game);
+            DmmGameHandler.removeWindow(game);
             break;
         }
     }
