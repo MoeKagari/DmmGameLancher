@@ -1,3 +1,4 @@
+"use strict";
 class DmmGameBound {
     constructor(width, height, top_delta, left_delta) {
         this.width = width;
@@ -86,10 +87,12 @@ class DmmGameHandler {
         }, window => {
             var tab = window.tabs[0];
             console.log("create window " + (isR18 ? "R18 " : "") + game.name);
+            //存储 window
             DmmGameHandler.setWindow(game, {
                 "id": window.id,
                 "tabId": tab.id
             });
+            //更新 tab 的默认 muted
             chrome.tabs.update(tab.id, {
                 "muted": DmmGameHandler.isWindowMuted(game)
             }, tabWithNewState => {
@@ -100,9 +103,10 @@ class DmmGameHandler {
                     game.name
                 );
             });
+            //重置 size
             chrome.windows.update(window.id, {
-                "width": game.bound.width + (window.width - window.tabs[0].width),
-                "height": game.bound.height + (window.height - window.tabs[0].height),
+                "width": game.bound.width + (window.width - tab.width),
+                "height": game.bound.height + (window.height - tab.height),
                 "focused": true
             });
         });

@@ -1,3 +1,4 @@
+"use strict";
 var dmmGameArray = [
     new DmmGame(
         "艦隊これくしょん",

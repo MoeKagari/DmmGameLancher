@@ -1,3 +1,4 @@
+"use strict";
 chrome.runtime.getBackgroundPage(backgroundPage => {
     var body = $("body");
     var gameGridRowItemArray = backgroundPage.dmmGameArray.map(makeGameGridRowItem);
@@ -62,7 +63,7 @@ function makeGameBaseOperationButtonGroupItem(game) {
 
     return $("<div></div>")
         .css("display", "grid")
-        .css("grid-template-columns", "70px 70px 70px 64px 1fr")
+        .css("grid-template-columns", "70px 70px 70px 80px 1fr")
         .css("grid-column-gap", "5px")
         .append(openGameWindowButton)
         .append(focusWindowButton)
