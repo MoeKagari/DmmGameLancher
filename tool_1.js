@@ -16,20 +16,52 @@ class DmmGame {
         this.bound = bound;
         this.other = other;
         this.windowKey = "window_" + name;
+        this.mutedKey = "muted_" + name;
+        if (localStorage.getItem(this.mutedKey) === null) {
+            DmmGameHandler.setWindowMuted(this, other.defaultMuted || false)
+        }
     }
 }
 
 class DmmGameHandler {
+    static toggleSound(game) {
+        var window = DmmGameHandler.getWindow(game);
+        var oldMuted = DmmGameHandler.isWindowMuted(game);
+
+        if (!window) {
+            DmmGameHandler.setWindowMuted(game, !oldMuted);
+            return;
+        }
+
+        chrome.tabs.update(window.tabId, {
+            "muted": !oldMuted
+        }, tabWithNewState => {
+            var newMuted = tabWithNewState.mutedInfo.muted;
+            DmmGameHandler.setWindowMuted(game, newMuted);
+            console.log("toggleSound (muted: %s -> %s) , %s", oldMuted, newMuted, game.name);
+        });
+    }
+    static setWindowMuted(game, muted) {
+        localStorage.setItem(game.mutedKey, muted);
+    }
+    static isWindowMuted(game) {
+        return localStorage.getItem(game.mutedKey) === "true";
+    }
+
     static getIcon(game) {
         return game.other.icon || "empty.png";
     }
 
+    static isWindowExistent(game) {
+        return DmmGameHandler.getWindow(game) ? true : false;
+    }
     static removeWindow(game) {
         localStorage.removeItem(game.windowKey);
         chrome.runtime.sendMessage({
             "game": game,
             "type": "window_remove"
         });
+        console.log("remove window " + game.name);
     }
     static setWindow(game, window) {
         localStorage.setItem(game.windowKey, JSON.stringify(window));
@@ -50,18 +82,29 @@ class DmmGameHandler {
             "left": 100,
             "top": 100,
             "width": game.bound.width,
-            "height": game.bound.height
-        }, newWindow => {
+            "height": game.bound.height,
+        }, window => {
+            var tab = window.tabs[0];
+            console.log("create window " + (isR18 ? "R18 " : "") + game.name);
             DmmGameHandler.setWindow(game, {
-                "id": newWindow.id,
-                "tabId": newWindow.tabs[0].id
+                "id": window.id,
+                "tabId": tab.id
             });
-            chrome.windows.update(newWindow.id, {
-                "width": game.bound.width + (newWindow.width - newWindow.tabs[0].width),
-                "height": game.bound.height + (newWindow.height - newWindow.tabs[0].height),
+            chrome.tabs.update(tab.id, {
+                "muted": DmmGameHandler.isWindowMuted(game)
+            }, tabWithNewState => {
+                console.log(
+                    "set muted from %s -> %s(default) , %s",
+                    tab.mutedInfo.muted,
+                    tabWithNewState.mutedInfo.muted,
+                    game.name
+                );
+            });
+            chrome.windows.update(window.id, {
+                "width": game.bound.width + (window.width - window.tabs[0].width),
+                "height": game.bound.height + (window.height - window.tabs[0].height),
                 "focused": true
             });
-            console.log("create window " + (isR18 ? "R18 " : "") + game.name);
         });
     }
 
@@ -117,16 +160,5 @@ class DmmGameHandler {
                     });
                 });
         }, 300);
-    }
-
-    static toggleSound(game) {
-        chrome.tabs.get(DmmGameHandler.getWindow(game).tabId, tabWithCurrentState => {
-            var oldMuted = tabWithCurrentState.mutedInfo.muted;
-            chrome.tabs.update(tabWithCurrentState.id, {
-                "muted": !oldMuted
-            }, tabWithNewState => {
-                console.log("toggleSound (muted: %s -> %s) , %s", oldMuted, tabWithNewState.mutedInfo.muted, game.name);
-            });
-        });
     }
 }

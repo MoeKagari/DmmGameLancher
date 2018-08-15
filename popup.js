@@ -6,22 +6,23 @@ chrome.runtime.getBackgroundPage(backgroundPage => {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request);
-    switch (request.type) {
+    var type = request.type;
+    var game = request.game;
+    switch (type) {
         case "window_set":
-            $("." + request.game.name + " .operation.windowNotExistent").attr("disabled", true);
-            $("." + request.game.name + " .operation.windowExistent").attr("disabled", false);
+            $("." + game.simpleName + " .windowNotExistent").attr("disabled", true);
+            $("." + game.simpleName + " .windowExistent").attr("disabled", false);
             break;
         case "window_remove":
-            $("." + request.game.name + " .operation.windowNotExistent").attr("disabled", false);
-            $("." + request.game.name + " .operation.windowExistent").attr("disabled", true);
+            $("." + game.simpleName + " .windowNotExistent").attr("disabled", false);
+            $("." + game.simpleName + " .windowExistent").attr("disabled", true);
             break;
     }
 });
 
 function makeGameGridRowItem(game) {
     return $("<div class='game'></div>")
-        .addClass(game.name)
+        .addClass(game.simpleName)
         .append(makeGameIconItem(game))
         .append(
             $("<div></div>")
@@ -36,7 +37,7 @@ function makeGameIconItem(game) {
 }
 
 function makeGameBaseOperationButtonGroupItem(game) {
-    var isWindowExistent = DmmGameHandler.getWindow(game) ? true : false;
+    var isWindowExistent = DmmGameHandler.isWindowExistent(game);
 
     var openGameWindowButton = $("<button class='operation windowNotExistent openGameWindow'>打开游戏</button>");
     openGameWindowButton.attr("disabled", isWindowExistent);
@@ -59,21 +60,39 @@ function makeGameBaseOperationButtonGroupItem(game) {
         "type": "screenShot"
     }));
 
-    var toggleSoundButton = $("<button class='operation windowExistent toggleSound'>切换声音</button>");
-    toggleSoundButton.attr("disabled", !isWindowExistent);
-    toggleSoundButton.click(ev => chrome.runtime.sendMessage({
-        "game": game,
-        "type": "toggleSound"
-    }));
-
     return $("<div></div>")
         .css("display", "grid")
-        .css("grid-template-columns", "70px 70px 70px 70px 1fr")
+        .css("grid-template-columns", "70px 70px 70px 64px 1fr")
         .css("grid-column-gap", "5px")
         .append(openGameWindowButton)
         .append(focusWindowButton)
         .append(screenShotButton)
-        .append(toggleSoundButton);
+        .append(makeToggleSoundSwitchButtonItem(game, isWindowExistent));
+}
+
+function makeToggleSoundSwitchButtonItem(game) {
+    return $("<div class='switch-button'></div>")
+        .append(
+            $("<input type='checkbox' " + (DmmGameHandler.isWindowMuted(game) ? "" : "checked") + ">")
+            .css("display", "none")
+            .attr("id", "muted-" + game.simpleName)
+            .attr("name", "switch-" + game.simpleName)
+            .addClass("switch-button-input operation toggleSound")
+            .click(function(ev) {
+                //给 .switch-button 加上的话 , 一次点击会触发两次event
+                chrome.runtime.sendMessage({
+                    "game": game,
+                    "type": "toggleSound"
+                });
+                ev.stopPropagation();
+            })
+        )
+        .append(
+            $("<label class='switch-button-label' for='muted-" + game.simpleName + "'></label>")
+            .append("<span class='thumb'></span>")
+            .append("<span class='sound on'>声开</span>")
+            .append("<span class='sound off'>声关</span>")
+        );
 }
 
 function makeGameZoomOperationItem(game) {

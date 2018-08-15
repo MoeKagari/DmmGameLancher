@@ -4,6 +4,7 @@ body {
     display: grid;
     grid-template-columns: 450px;
     grid-row-gap: 5px;
+    font-size: 14px;
 }
 
 .game {
@@ -22,7 +23,7 @@ body {
 
 .game .name {
     margin: 0 0 0 0;
-    font-size: 18;
+    font-size: 18px;
     color: #171717;
     text-decoration: none;
     font-weight: normal;

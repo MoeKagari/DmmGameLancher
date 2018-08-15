@@ -11,11 +11,13 @@ var dmmGameArray = [
         "フラワーナイトガール",
         "http://pc-play.games.dmm.co.jp/play/flower-x/",
         "http://pc-play.games.dmm.com/play/flower/",
-        new DmmGameBound(960, 640, 0, 0)
+        new DmmGameBound(960, 640, 0, 0), {
+            "defaultMuted": true
+        }
     ),
     new DmmGame(
         "御城プロジェクト:RE～CASTLE DEFENSE～",
-        "御城プロジェクトRE",
+        "御城プロジェクト-RE",
         "http://pc-play.games.dmm.co.jp/play/oshirore/",
         "http://pc-play.games.dmm.com/play/oshirore/",
         new DmmGameBound(1275, 720, 0, 6 / 2)

@@ -1,0 +1,56 @@
+.switch-button {}
+
+.switch-button-label {
+    position: relative;
+    display: block;
+    width: 64px;
+    height: 22px;
+    background-color: #ccc;
+    border-radius: 22px;
+    margin: auto;
+}
+
+.switch-button-label .sound {
+    height: 100%;
+    line-height: 22px;
+}
+
+.switch-button-label .sound.on {
+    float: left;
+    color: #fff;
+    display: none;
+    padding-left: calc(22px / 2);
+}
+
+.switch-button-label .sound.off {
+    float: right;
+    color: #fff;
+    display: inline-block;
+    padding-right: calc(22px / 2);
+}
+
+.switch-button-label .thumb {
+    position: absolute;
+    left: 0px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: all 0.3s;
+}
+
+.switch-button-input:checked+.switch-button-label {
+    background-color: #51ccee;
+}
+
+.switch-button-input:checked+.switch-button-label .thumb {
+    left: calc(100% - 22px);
+}
+
+.switch-button-input:checked+.switch-button-label .on {
+    display: inline-block;
+}
+
+.switch-button-input:checked+.switch-button-label .off {
+    display: none;
+}

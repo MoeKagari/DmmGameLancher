@@ -5,19 +5,20 @@ chrome.browserAction.setTitle({
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request);
-    switch (request.type) {
+    var type = request.type;
+    var game = request.game;
+    switch (type) {
         case "window_create":
-            DmmGameHandler.createGameWindow(request.game);
+            DmmGameHandler.createGameWindow(game);
             break;
         case "window_focus":
-            DmmGameHandler.focusWindow(request.game);
+            DmmGameHandler.focusWindow(game);
             break;
         case "screenShot":
-            DmmGameHandler.screenShot(request.game);
+            DmmGameHandler.screenShot(game);
             break;
         case "toggleSound":
-            DmmGameHandler.toggleSound(request.game);
+            DmmGameHandler.toggleSound(game);
             break;
     }
 });
