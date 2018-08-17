@@ -19,7 +19,7 @@ class DmmGame {
         this.windowKey = "window_" + name;
         this.mutedKey = "muted_" + name;
         if (localStorage.getItem(this.mutedKey) === null) {
-            DmmGameHandler.setWindowMuted(this, other.defaultMuted || false)
+            DmmGameHandler.setWindowMuted(this, other.defaultMuted || false);
         }
     }
 }
@@ -31,6 +31,7 @@ class DmmGameHandler {
 
         if (!window) {
             DmmGameHandler.setWindowMuted(game, !oldMuted);
+            console.log("toggleSound (muted: %s -> %s)", oldMuted, !oldMuted);
             return;
         }
 
@@ -86,7 +87,7 @@ class DmmGameHandler {
             "height": game.bound.height,
         }, window => {
             var tab = window.tabs[0];
-            console.log("create window " + (isR18 ? "R18 " : "") + game.name);
+            console.log(`create window (${isR18?"里":"表"}) - ${game.name}`);
             //存储 window
             DmmGameHandler.setWindow(game, {
                 "id": window.id,
@@ -96,18 +97,12 @@ class DmmGameHandler {
             chrome.tabs.update(tab.id, {
                 "muted": DmmGameHandler.isWindowMuted(game)
             }, tabWithNewState => {
-                console.log(
-                    "set muted from %s -> %s(default) , %s",
-                    tab.mutedInfo.muted,
-                    tabWithNewState.mutedInfo.muted,
-                    game.name
-                );
+                console.log(`set muted from ${tab.mutedInfo.muted} -> ${tabWithNewState.mutedInfo.muted}(default) , ${game.name}`);
             });
             //重置 size
             chrome.windows.update(window.id, {
                 "width": game.bound.width + (window.width - tab.width),
-                "height": game.bound.height + (window.height - tab.height),
-                "focused": true
+                "height": game.bound.height + (window.height - tab.height)
             });
         });
     }

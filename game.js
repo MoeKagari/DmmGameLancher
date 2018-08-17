@@ -5,7 +5,7 @@ var dmmGameArray = [
         "艦これ",
         "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=854854/",
         "http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/",
-        new DmmGameBound(800, 480, 16, 0), {
+        new DmmGameBound(1200, 720, 17, 0), {
             "defaultMuted": false,
             "icon": "empty.png"
         }

@@ -6,8 +6,8 @@
     "author": "MoeKagari",
     "background": {
         "scripts": [
-            "tool_1.js",
-            "tool_2.js",
+            "tool.js",
+            "game.js",
             "background.js"
         ],
         "persistent": false
