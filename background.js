@@ -68,10 +68,12 @@ chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
                     if (game_frame) {
                         game_frame.style.zIndex = 99;
                         game_frame.style.position = "fixed";
-                        game_frame.style.top = -${game.bound.top_delta} + "px";
+                        game_frame.style.top = "-" + ${game.bound.top_delta} + "px";
 
                         var game_frame_width = Math.round(game_frame.getBoundingClientRect().width);
-                        game_frame.style.left = -(game_frame_width - ${game.bound.width - 2 * game.bound.left_delta})/2  + "px";
+                        game_frame.style.left = "-" + (
+                        (game_frame_width - ${game.bound.width + game.bound.left_delta + game.bound.right_delta})/2 + ${game.bound.left_delta}
+                        ) + "px";
                     }
                 }
                 fitGameAreaToWindow();

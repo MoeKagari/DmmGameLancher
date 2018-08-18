@@ -1,10 +1,11 @@
 "use strict";
 class DmmGameBound {
-    constructor(width, height, top_delta, left_delta) {
+    constructor(width, height, top_delta, left_delta , right_delta) {
         this.width = width;
         this.height = height;
         this.top_delta = top_delta;
         this.left_delta = left_delta;
+        this.right_delta = right_delta;
     }
 }
 

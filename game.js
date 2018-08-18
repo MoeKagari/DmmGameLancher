@@ -5,7 +5,7 @@ var dmmGameArray = [
         "艦これ",
         "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=854854/",
         "http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/",
-        new DmmGameBound(1200, 720, 17, 0), {
+        new DmmGameBound(1200, 720, 16, 0, 0), {
             "defaultMuted": false,
             "icon": "empty.png"
         }
@@ -15,7 +15,7 @@ var dmmGameArray = [
         "フラワーナイトガール",
         "http://pc-play.games.dmm.co.jp/play/flower-x/",
         "http://pc-play.games.dmm.com/play/flower/",
-        new DmmGameBound(960, 640, 0, 0), {
+        new DmmGameBound(960, 640, 0, 0, 0), {
             "defaultMuted": true,
             "icon": "empty.png"
         }
@@ -25,7 +25,7 @@ var dmmGameArray = [
         "御城プロジェクト-RE",
         "http://pc-play.games.dmm.co.jp/play/oshirore/",
         "http://pc-play.games.dmm.com/play/oshirore/",
-        new DmmGameBound(1275, 720, 0, 6 / 2), {
+        new DmmGameBound(1275, 720, 0, 6, 0), {
             "defaultMuted": false,
             "icon": "empty.png"
         }
