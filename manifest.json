@@ -1,6 +1,6 @@
 {
     "name": "DmmGameLancher",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "manifest_version": 2,
     "description": "使用大小适宜的独立窗口启动DmmGame , 并有静音、截图、缩放等功能",
     "author": "MoeKagari",

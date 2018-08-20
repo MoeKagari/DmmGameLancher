@@ -171,6 +171,6 @@ class DmmGameHandler {
                         console.log("save capture to " + filename);
                     });
                 });
-        }, 300);
+        }, 200);
     }
 }
