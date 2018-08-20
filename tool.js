@@ -1,6 +1,6 @@
 "use strict";
 class DmmGameBound {
-    constructor(width, height, top_delta, left_delta , right_delta) {
+    constructor(width, height, top_delta, left_delta, right_delta) {
         this.width = width;
         this.height = height;
         this.top_delta = top_delta;
@@ -10,37 +10,53 @@ class DmmGameBound {
 }
 
 class DmmGame {
-    constructor(name, simpleName, url, url_x, bound, other = {}) {
+    constructor(name, simpleName, url, url_x, bound, defaultSetting = {}) {
         this.name = name;
         this.simpleName = simpleName;
         this.url = url;
         this.url_x = url_x;
         this.bound = bound;
-        this.other = other;
+
+        this.defaultSetting = {};
+        this.defaultSetting.enable = defaultSetting.enable == false ? false : true;
+        this.defaultSetting.useR18 = defaultSetting.useR18 == false ? false : true;
+        this.defaultSetting.muted = defaultSetting.muted == true ? true : false;
+        this.defaultSetting.icon = defaultSetting.icon || "empty.png";
+
         this.windowKey = "window_" + name;
         this.mutedKey = "muted_" + name;
         if (localStorage.getItem(this.mutedKey) === null) {
-            DmmGameHandler.setWindowMuted(this, other.defaultMuted || false);
+            DmmGameHandler.setWindowMuted(this, this.defaultSetting.mute);
         }
     }
 }
 
 class DmmGameHandler {
+    static createWindowTitleString(name, muted) {
+        return (muted ? "(静音) - " : "") + name;
+    }
+
     static toggleSound(game) {
-        var window = DmmGameHandler.getWindow(game);
+        var windowInfo = DmmGameHandler.getWindow(game);
         var oldMuted = DmmGameHandler.isWindowMuted(game);
 
-        if (!window) {
+        if (!windowInfo) {
             DmmGameHandler.setWindowMuted(game, !oldMuted);
             console.log("toggleSound (muted: %s -> %s)", oldMuted, !oldMuted);
             return;
         }
 
-        chrome.tabs.update(window.tabId, {
+        chrome.tabs.update(windowInfo.tabId, {
             "muted": !oldMuted
         }, tabWithNewState => {
             var newMuted = tabWithNewState.mutedInfo.muted;
             DmmGameHandler.setWindowMuted(game, newMuted);
+            chrome.tabs.executeScript(windowInfo.tabId, {
+                "code": `
+                    //retitle window
+                    document.title = "${DmmGameHandler.createWindowTitleString(game.name,newMuted)}";
+                    `
+            });
             console.log("toggleSound (muted: %s -> %s) , %s", oldMuted, newMuted, game.name);
         });
     }
@@ -49,10 +65,6 @@ class DmmGameHandler {
     }
     static isWindowMuted(game) {
         return localStorage.getItem(game.mutedKey) === "true";
-    }
-
-    static getIcon(game) {
-        return game.other.icon || "empty.png";
     }
 
     static isWindowExistent(game) {
@@ -66,8 +78,8 @@ class DmmGameHandler {
         });
         console.log("remove window " + game.name);
     }
-    static setWindow(game, window) {
-        localStorage.setItem(game.windowKey, JSON.stringify(window));
+    static setWindow(game, windowInfo) {
+        localStorage.setItem(game.windowKey, JSON.stringify(windowInfo));
         chrome.runtime.sendMessage({
             "game": game,
             "type": "window_set"
@@ -77,21 +89,21 @@ class DmmGameHandler {
         return JSON.parse(localStorage.getItem(game.windowKey));
     }
 
-    static createGameWindow(game, isR18 = false) {
+    static createGameWindow(game) {
         chrome.windows.create({
-            "url": isR18 ? game.url_x : game.url,
+            "url": game.defaultSetting.useR18 ? game.url_x : game.url,
             "focused": true,
             "type": "popup",
             "left": 100,
             "top": 100,
             "width": game.bound.width,
             "height": game.bound.height,
-        }, window => {
-            var tab = window.tabs[0];
-            console.log(`create window (${isR18?"里":"表"}) - ${game.name}`);
+        }, newWindow => {
+            var tab = newWindow.tabs[0];
+            console.log(`create window (${game.defaultSetting.useR18?"里":"表"}) - ${game.name}`);
             //存储 window
             DmmGameHandler.setWindow(game, {
-                "id": window.id,
+                "id": newWindow.id,
                 "tabId": tab.id
             });
             //更新 tab 的默认 muted
@@ -101,9 +113,9 @@ class DmmGameHandler {
                 console.log(`set muted from ${tab.mutedInfo.muted} -> ${tabWithNewState.mutedInfo.muted}(default) , ${game.name}`);
             });
             //重置 size
-            chrome.windows.update(window.id, {
-                "width": game.bound.width + (window.width - tab.width),
-                "height": game.bound.height + (window.height - tab.height)
+            chrome.windows.update(newWindow.id, {
+                "width": game.bound.width + (newWindow.width - tab.width),
+                "height": game.bound.height + (newWindow.height - tab.height)
             });
         });
     }

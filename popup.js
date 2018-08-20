@@ -16,16 +16,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 chrome.runtime.getBackgroundPage(backgroundPage => {
     var body = $("body");
-    body.css("grid-template-rows", `repeat(${backgroundPage.dmmGameArray.length},1fr)`);
-    backgroundPage.dmmGameArray.forEach(game => body.append(
+    var itemArray = backgroundPage.dmmGameArray.filter(game => game.defaultSetting.enable).map(game =>
         $(`<div class='game ${game.simpleName}'></div>`)
-        .append("<img class='icon' src='" + DmmGameHandler.getIcon(game) + "'></img>")
+        .append("<img class='icon' src='" + game.defaultSetting.icon + "'></img>")
         .append(
             $("<div></div>")
             .append("<h3 class='name'>" + game.name + "</h3>")
             .append(makeGameBaseOperationButtonGroupItem(game))
         )
-    ));
+    );
+    body.css("grid-template-rows", `repeat(${itemArray.length},1fr)`);
+    itemArray.forEach(item => body.append(item));
 });
 
 function makeGameBaseOperationButtonGroupItem(game) {
