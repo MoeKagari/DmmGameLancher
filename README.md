@@ -1,12 +1,12 @@
-#DmmGameLancher
+# DmmGameLancher
 ![预览](doc/preview.png)
-##介绍
+## 介绍
 **窗口化[DMMGAME](http://games.dmm.com/)的chrome扩展程序  
 代码中多参照另一项目[@chabon#ShiroproLauncher](https://github.com/chabon/ShiroproLauncher)**
-##安装
+## 安装
 **`[Clone or download] -> [Download Zip]` , 下载解压本项目文件到一个文件夹中  
 打开chrome扩展程序的开发者模式 , 然后点击"加载已解压的扩展程序" , 选择上面解压的文件夹**
-##添加
+## 添加新游戏
 **找到项目中的 `game.js` 文件 , 按照以下格式添加**
 
     var dmmGameArray = [... , ... , ... ,
@@ -18,6 +18,7 @@
             new DmmGameBound(宽度, 高度, 上边空白, 左边空白, 右边空白)
         )
     ];
+
 **宽度、高度、上边空白、左边空白、右边空白 , 可以使用浏览器的开发者工具查到**  
 
 **如若不会查 , 可以使用以下方法**  
