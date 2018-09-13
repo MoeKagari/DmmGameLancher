@@ -25,5 +25,12 @@ var dmmGameArray = [
         "http://pc-play.games.dmm.com/play/oshirore/",
         "http://pc-play.games.dmm.co.jp/play/oshirore/",
         new DmmGameBound(1275, 720, 0, 6, 0)
+    ),
+    new DmmGame(
+        "あいりすミスティリア！ ～少女のつむぐ夢の秘跡～",
+        "あいミス",
+        "http://pc-play.games.dmm.com/play/imys/",
+        "http://pc-play.games.dmm.co.jp/play/imys_r/",
+        new DmmGameBound(1280, 720, 17 + 24, 30, 0)
     )
 ];

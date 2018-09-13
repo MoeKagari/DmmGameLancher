@@ -2,7 +2,7 @@ body {
     margin: 0;
     user-select: none;
     display: grid;
-    grid-template-columns: 450px;
+    grid-template-columns: 500px;
     grid-row-gap: 5px;
     font-size: 14px;
 }

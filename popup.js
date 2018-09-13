@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 chrome.runtime.getBackgroundPage(backgroundPage => {
-    var body = $("body");
+	var body = $(document.body);
     var itemArray = backgroundPage.dmmGameArray.filter(game => game.defaultSetting.enable).map(game =>
         $(`<div class='game ${game.simpleName}'></div>`)
         .append("<img class='icon' src='" + game.defaultSetting.icon + "'></img>")
@@ -25,7 +25,7 @@ chrome.runtime.getBackgroundPage(backgroundPage => {
             .append(makeGameBaseOperationButtonGroupItem(game))
         )
     );
-    body.css("grid-template-rows", `repeat(${itemArray.length},1fr)`);
+	body.css("grid-template-rows", `repeat(${itemArray.length},1fr)`);
     itemArray.forEach(item => body.append(item));
 });
 
