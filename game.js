@@ -21,7 +21,7 @@ var dmmGameArray = [
     ),
     new DmmGame(
         "御城プロジェクト:RE～CASTLE DEFENSE～",
-        "御城プロジェクト-RE",
+        "御城プロジェクトRE",
         "http://pc-play.games.dmm.com/play/oshirore/",
         "http://pc-play.games.dmm.co.jp/play/oshirore/",
         new DmmGameBound(1275, 720, 0, 6, 0)

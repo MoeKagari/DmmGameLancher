@@ -10,26 +10,44 @@ chrome.browserAction.setTitle({
 var deleteStoredGameWindow = game => {
     var windowInfo = DmmGameHandler.getWindow(game);
     if (windowInfo) {
-        //当以最后关闭由此扩展 create 的 window 来关闭浏览器时
-        //chrome.windows.onRemoved 不会被触发
-        //所以存储在 localStorage 中的数据不会被删除
-        //再次启动浏览器时 , 需要删除不存在的窗口
-        chrome.windows.get(windowInfo.id, win => {
-            if (!win) {
+        chrome.windows.getAll(windows => {
+            //当以最后关闭由此扩展 create 的 window 来关闭浏览器时
+            //chrome.windows.onRemoved 不会被触发
+            //所以存储在 localStorage 中的数据不会被删除
+            //再次启动浏览器时 , 需要删除不存在的窗口
+            /*
+            chrome.windows.get(windowInfo.id, win => {
+                if (!win) {
+                    DmmGameHandler.removeWindow(game);
+                    console.log("↑删除不存在的window , 而不是由于 chrome.windows.onRemoved");
+                    console.log("↓error不用管");
+                }
+            });
+            */
+            if (!windows.map(window => window.id).includes(windowInfo.id)) {
                 DmmGameHandler.removeWindow(game);
-                console.log("↑删除不存在的window , 而不是由于 chrome.windows.onRemoved");
-                console.log("↓error不用管");
             }
-        });
 
-        //reinstall 时 , 当前已创建的window ,  muted 会失效
-        //需要更新 muted info
-        chrome.tabs.get(windowInfo.tabId, tab => {
-            if (tab) {
-                chrome.tabs.update(tab.id, {
-                    "muted": DmmGameHandler.isWindowMuted(game)
+            //reinstall 时 , 当前已创建的window ,  muted 会失效
+            //需要更新 muted info
+            /*
+            chrome.tabs.get(windowInfo.tabId, tab => {
+                if (tab) {
+                    chrome.tabs.update(tab.id, {
+                        "muted": DmmGameHandler.isWindowMuted(game)
+                    });
+                }
+            });
+            */
+            windows.forEach(window => {
+                chrome.tabs.getAllInWindow(window.id, tabs => {
+                    if (tabs.map(tab => tab.id).includes(windowInfo.tabId)) {
+                        chrome.tabs.update(windowInfo.tabId, {
+                            "muted": DmmGameHandler.isWindowMuted(game)
+                        });
+                    }
                 });
-            }
+            });
         });
     }
 };
