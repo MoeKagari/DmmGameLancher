@@ -99,11 +99,15 @@ chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
                         game_frame.style.zIndex = 99;
                         game_frame.style.position = "fixed";
                         game_frame.style.top = "-" + ${game.bound.top_delta} + "px";
+                        console.log(${game.bound.top_delta});
+                        console.log(game_frame.style.top);
 
                         var game_frame_width = Math.round(game_frame.getBoundingClientRect().width);
                         game_frame.style.left = "-" + (
                         (game_frame_width - ${game.bound.width + game.bound.left_delta + game.bound.right_delta})/2 + ${game.bound.left_delta}
                         ) + "px";
+                        console.log(game_frame_width);
+                        console.log(game_frame.style.left);
                     }
                 }
                 fitGameAreaToWindow();

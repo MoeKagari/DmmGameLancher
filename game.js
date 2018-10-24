@@ -32,5 +32,12 @@ var dmmGameArray = [
         "http://pc-play.games.dmm.com/play/imys/",
         "http://pc-play.games.dmm.co.jp/play/imys_r/",
         new DmmGameBound(1280, 720, 17 + 24, 30, 0)
+    ),
+    new DmmGame(
+        "ジェミニシード",
+        "ジェミニシード",
+        "http://pc-play.games.dmm.co.jp/play/geminix/",
+        "http://pc-play.games.dmm.com/play/gemini/",
+        new DmmGameBound(1152, 648, (692 - 648) / 2 - 2, (1194 - 1152 - 2) / 2, 1320 - 1152 - (1194 - 1152 - 2) / 2)
     )
 ];
