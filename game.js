@@ -36,8 +36,8 @@ var dmmGameArray = [
     new DmmGame(
         "ジェミニシード",
         "ジェミニシード",
-        "http://pc-play.games.dmm.co.jp/play/geminix/",
         "http://pc-play.games.dmm.com/play/gemini/",
+        "http://pc-play.games.dmm.co.jp/play/geminix/",
         new DmmGameBound(1152, 648, (692 - 648) / 2 - 2, (1194 - 1152 - 2) / 2, 1320 - 1152 - (1194 - 1152 - 2) / 2)
     )
 ];
